@@ -22,8 +22,13 @@ def AuToUpDaTE():
         
         if r.status_code == 200:
             data = r.json()
-            url = data.get('server_url', 'https://100067.connect.garena.com/')
+            url = data.get('server_url')
             ob = data.get('latest_release_version', version)
+            if url:
+                print(f"[✓] Got server URL from version check: {url}")
+            else:
+                print(f"[WARNING] No server_url in response, using fallback")
+                url = 'https://100067.connect.garena.com/'
         else:
             print(f"[WARNING] Version server returned status {r.status_code}, using fallback")
             url = 'https://100067.connect.garena.com/'

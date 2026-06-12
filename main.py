@@ -71,6 +71,8 @@ async def GeNeRaTeAccEss(uid, password):
 online_writer = None
 whisper_writer = None
 login_url, ob, version = AuToUpDaTE()
+print(f"\n[DEBUG] Login URL: {login_url}")
+print(f"[DEBUG] Version: {version}\n")
 Hr = {
     'User-Agent': Uaa(),
     'Connection': "Keep-Alive",
@@ -160,6 +162,7 @@ async def MajorLogin(payload):
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
     try:
+        # Try the standard endpoint
         async with aiohttp.ClientSession() as session:
             async with session.post(url, data=payload, headers=Hr, ssl=ssl_context, timeout=30) as response:
                 if response.status == 200:
@@ -169,6 +172,21 @@ async def MajorLogin(payload):
                     else:
                         print(f"[ERROR] MajorLogin returned empty response")
                         return None
+                elif response.status == 404:
+                    # Try alternate endpoint format
+                    print(f"[WARNING] MajorLogin 404 at {url}, trying alternate format...")
+                    alt_url = f"{login_url.rstrip('/')}/login/oauth/token"
+                    print(f"[DEBUG] Trying alternate URL: {alt_url}")
+                    try:
+                        async with session.post(alt_url, data=payload, headers=Hr, ssl=ssl_context, timeout=30) as alt_response:
+                            if alt_response.status == 200:
+                                data = await alt_response.read()
+                                if data and len(data) > 0:
+                                    return data
+                    except:
+                        pass
+                    print(f"[ERROR] MajorLogin returned status {response.status}")
+                    return None
                 else:
                     print(f"[ERROR] MajorLogin returned status {response.status}")
                     return None
@@ -564,11 +582,13 @@ async def InitializeBot(bot_id, uid, password):
             return None
 
         print(f"[BOT{bot_id}] ✅ Got access token, authenticating...")
+        print(f"[BOT{bot_id}] [DEBUG] Using login_url: {login_url}")
         payload = await EncRypTMajoRLoGin(open_id, access_token)
         login_resp = await MajorLogin(payload)
         if not login_resp:
             print(f"[BOT{bot_id}] ❌ MajorLogin failed - Server rejected authentication")
             print(f"[BOT{bot_id}] ℹ️  Check if UID/Password are correct or account is banned")
+            print(f"[BOT{bot_id}] [DEBUG] Make sure you're using Garena account UID (not guest account)")
             return None
         
         print(f"[BOT{bot_id}] ✅ Authentication successful")
