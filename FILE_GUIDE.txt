@@ -1,0 +1,346 @@
+╔══════════════════════════════════════════════════════════════╗
+║          🎮 4-BOT AUTO SQUAD SYSTEM - FILE GUIDE 🎮          ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 START HERE
+═════════════════════════════════════════════════════════════════
+1. Read: START_HERE.md (this gives you the overview)
+2. Create: bot.txt (your 4 bot credentials)
+3. Run: python bot_launcher.py
+4. Choose: Option 1 (fully automated)
+5. Enter: Team code
+
+═════════════════════════════════════════════════════════════════
+
+📦 CORE SYSTEM FILES
+═════════════════════════════════════════════════════════════════
+
+main.py ........................... [ORIGINAL] Bot auth & connections
+├─ Authenticates 4 bots with Garena
+├─ Handles chat and online server connections
+├─ Processes bot commands (/lw, /stop_auto, /help)
+└─ Entry point for manual control
+
+squad_manager.py .................. [NEW] Squad operations
+├─ Forms squads (BOT1 invites others)
+├─ Starts matches with spam
+├─ Detects match end and returns to lobby
+└─ Manages continuous cycles
+
+bot_launcher.py ................... [NEW] Interactive launcher ⭐
+├─ Menu-driven interface (6 options)
+├─ Configuration management
+├─ Status monitoring
+└─ Easiest way to run everything
+
+multi_bot_orchestrator.py ......... [NEW] Advanced coordination
+├─ Manages bot states and transitions
+├─ Error recovery and reconnection
+├─ Complex automation logic
+└─ For advanced users/custom scripts
+
+config.json ....................... [NEW] Configuration center
+├─ Total bots, region, timing settings
+├─ Auto-cycle configuration
+├─ Logging and debugging options
+└─ Edit without touching code
+
+verify_setup.py ................... [NEW] Pre-launch checker
+├─ Verifies bot.txt is valid
+├─ Checks all files exist
+├─ Tests Python dependencies
+└─ Green light before running
+
+═════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTATION FILES
+═════════════════════════════════════════════════════════════════
+
+START_HERE.md ..................... [NEW] This overview file
+└─ Read first! Quick introduction to everything
+
+QUICK_START.md .................... [NEW] 5-minute setup
+├─ Step-by-step instructions
+├─ Copy-paste examples
+└─ Common issues & quick fixes
+
+BOT_SETUP_4BOTS.md ................ [NEW] Complete guide
+├─ Detailed setup instructions
+├─ Full configuration options
+├─ Comprehensive troubleshooting
+├─ Workflow diagrams
+└─ Performance tips
+
+README_4BOTS.md ................... [NEW] System overview
+├─ How everything works together
+├─ All three ways to run
+├─ Component descriptions
+└─ Advanced usage scenarios
+
+SETUP_COMPLETE.md ................. [NEW] Setup summary
+├─ What was created
+├─ File checklist
+└─ Quick reference
+
+MULTI_BOT_SETUP.md ................ [ORIGINAL] Original guide
+└─ Still useful for reference
+
+═════════════════════════════════════════════════════════════════
+
+🔧 HELPER FILES
+═════════════════════════════════════════════════════════════════
+
+bot.txt ........................... [YOU MUST CREATE] Your credentials
+├─ 4 bot UIDs and passwords
+├─ JSON format
+└─ KEEP PRIVATE!
+
+bot.txt.example ................... [TEMPLATE] Copy to create bot.txt
+└─ Shows required format
+
+requirements.txt .................. [DEPENDENCIES]
+├─ Python packages needed
+└─ Run: pip install -r requirements.txt
+
+═════════════════════════════════════════════════════════════════
+
+🛠️ EXISTING SUPPORT FILES
+═════════════════════════════════════════════════════════════════
+
+autoup.py ......................... [ORIGINAL] Version updates
+xDL.py ............................ [ORIGINAL] Utilities
+token.json ........................ [ORIGINAL] Auth tokens
+Pb2/ .............................. [ORIGINAL] Protobuf files
+└─ DEcwHisPErMsG_pb2.py
+└─ MajoRLoGinrEq_pb2.py
+└─ MajoRLoGinrEs_pb2.py
+└─ PorTs_pb2.py
+
+═════════════════════════════════════════════════════════════════
+
+🎯 THREE WAYS TO RUN
+═════════════════════════════════════════════════════════════════
+
+METHOD 1: FULLY AUTOMATED (⭐ RECOMMENDED)
+─────────────────────────────────────
+$ python bot_launcher.py
+→ Choose option 1
+→ Enter team code
+→ Bots run forever automatically!
+
+✅ Best for: Continuous farming
+✅ Effort: Minimal
+✅ Control: None needed
+
+
+METHOD 2: MANUAL MODE
+─────────────────────
+$ python bot_launcher.py
+→ Choose option 2
+→ Message any bot: /lw TEAMCODE
+→ Full control via commands
+
+✅ Best for: Testing, learning
+✅ Effort: Moderate
+✅ Control: Full
+
+
+METHOD 3: DIRECT MAIN.PY
+────────────────────────
+$ python main.py
+→ Message any bot: /lw TEAMCODE
+
+✅ Best for: Advanced users
+✅ Effort: Technical
+✅ Control: Full
+
+═════════════════════════════════════════════════════════════════
+
+⚡ QUICK START (COPY-PASTE)
+═════════════════════════════════════════════════════════════════
+
+1. Create bot.txt:
+   {
+       "UID1": "PASS1",
+       "UID2": "PASS2",
+       "UID3": "PASS3",
+       "UID4": "PASS4"
+   }
+
+2. Install dependencies:
+   pip install -r requirements.txt
+
+3. Verify setup:
+   python verify_setup.py
+
+4. Run launcher:
+   python bot_launcher.py
+
+5. Choose 1, enter team code, done!
+
+═════════════════════════════════════════════════════════════════
+
+📊 BOT ROLES
+═════════════════════════════════════════════════════════════════
+
+BOT1: Squad Builder
+├─ Invites BOT2, BOT3, BOT4
+├─ Starts matches
+└─ Leads the squad
+
+BOT2: Squad Member
+├─ Accepts invite from BOT1
+└─ Follows along
+
+BOT3: Squad Member
+├─ Accepts invite from BOT1
+└─ Follows along
+
+BOT4: Squad Member
+├─ Accepts invite from BOT1
+└─ Follows along
+
+═════════════════════════════════════════════════════════════════
+
+🔄 WHAT HAPPENS WHEN YOU RUN IT
+═════════════════════════════════════════════════════════════════
+
+[START] 
+  ↓
+[Bots authenticate with Garena] (30-60 seconds)
+  ↓
+[BOT1 invites BOT2, BOT3, BOT4]
+  ↓
+[All bots join squad] (few seconds)
+  ↓
+[BOT1 starts match] (18 second spam)
+  ↓
+[Clash Squad match plays] (10-30 minutes)
+  ↓
+[Match ends - bots leave squad] (5 seconds wait)
+  ↓
+[Return to lobby]
+  ↓
+[Wait 3 seconds]
+  ↓
+[LOOP] Go back to "BOT1 invites..." step
+
+═════════════════════════════════════════════════════════════════
+
+⚙️ CONFIGURATION (config.json)
+═════════════════════════════════════════════════════════════════
+
+total_bots: 4               (use 1-4 bots)
+squad_builder_bot: 1        (BOT1 invites)
+region: "IN"                (IN/BD/BR/US)
+auto_cycle: true            (continuous cycles)
+start_spam_duration: 18     (how long to spam start)
+wait_after_match: 5         (wait before leaving)
+
+═════════════════════════════════════════════════════════════════
+
+📱 BOT COMMANDS
+═════════════════════════════════════════════════════════════════
+
+/lw TEAMCODE    → Start squad and run matches
+/stop_auto      → Stop all bots
+/help           → Show menu
+/status         → Current status
+
+═════════════════════════════════════════════════════════════════
+
+✨ FEATURES
+═════════════════════════════════════════════════════════════════
+
+✅ 4 Bots Running Simultaneously
+✅ Automatic Squad Formation
+✅ Continuous Match Cycling
+✅ Auto Restart After Match
+✅ Interactive Menu Control
+✅ Error Recovery & Reconnection
+✅ Configuration Management
+✅ Status Monitoring
+✅ Comprehensive Documentation
+✅ Advanced Orchestration
+
+═════════════════════════════════════════════════════════════════
+
+🛑 HOW TO STOP
+═════════════════════════════════════════════════════════════════
+
+Option 1: Via menu
+$ python bot_launcher.py → Choose 5
+
+Option 2: Command
+Message any bot: /stop_auto
+
+Option 3: Keyboard
+Press Ctrl+C
+
+═════════════════════════════════════════════════════════════════
+
+❓ TROUBLESHOOTING
+═════════════════════════════════════════════════════════════════
+
+Problem: Bots won't connect
+Solution: Check bot.txt credentials are correct
+
+Problem: Squad won't form
+Solution: Make sure all 4 bots are online
+
+Problem: Match won't start
+Solution: Increase start_spam_duration in config.json
+
+Problem: Connection drops
+Solution: Check internet, enable VPN
+
+👉 Full troubleshooting: See BOT_SETUP_4BOTS.md
+
+═════════════════════════════════════════════════════════════════
+
+📋 CHECKLIST BEFORE RUNNING
+═════════════════════════════════════════════════════════════════
+
+☐ Create bot.txt with 4 credentials
+☐ Install dependencies: pip install -r requirements.txt
+☐ Run verify_setup.py and check for ✅ marks
+☐ All files present (run: python verify_setup.py)
+☐ Internet connection stable
+☐ All 4 accounts are verified in Free Fire
+
+═════════════════════════════════════════════════════════════════
+
+🚀 READY TO START?
+═════════════════════════════════════════════════════════════════
+
+1. Create bot.txt
+2. Run: python bot_launcher.py
+3. Choose 1
+4. Enter team code
+5. Watch your bots automate Clash Squad! 🎮
+
+═════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTATION QUICK LINKS
+═════════════════════════════════════════════════════════════════
+
+➜ START_HERE.md ................ Overview (you're reading!)
+➜ QUICK_START.md .............. 5-minute setup
+➜ BOT_SETUP_4BOTS.md .......... Complete guide
+➜ README_4BOTS.md ............ System overview
+➜ SETUP_COMPLETE.md .......... Setup summary
+
+═════════════════════════════════════════════════════════════════
+
+🎉 YOU'RE ALL SET!
+═════════════════════════════════════════════════════════════════
+
+Your 4-bot automation system is complete and ready to use.
+
+Start with: python bot_launcher.py
+
+Enjoy unlimited Clash Squad farming! 🚀
+
+═════════════════════════════════════════════════════════════════
+Built with ❤️ for Free Fire Automation
+═════════════════════════════════════════════════════════════════

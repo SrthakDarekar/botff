@@ -1,0 +1,26 @@
+{
+    "total_bots": 4,
+    "squad_builder_bot": 1,
+    "region": "IN",
+    "bot_credentials_file": "bot.txt",
+    "auto_cycle": true,
+    "cycle_duration": null,
+    "start_spam_duration": 18,
+    "wait_after_match": 5,
+    "squad_settings": {
+        "auto_accept_invites": true,
+        "auto_ready_up": true,
+        "prevent_squad_leave": false
+    },
+    "logging": {
+        "enabled": true,
+        "log_file": "bot_activity.log",
+        "log_level": "INFO"
+    },
+    "advanced": {
+        "reconnect_delay": 0.5,
+        "max_retries": 3,
+        "packet_delay": 0.1,
+        "match_end_detection": "auto"
+    }
+}
