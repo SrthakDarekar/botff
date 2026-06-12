@@ -238,6 +238,17 @@ async def leave_squad_packet(key, iv, region):
         packet_type = "0515"
     return await GeneRaTePk((await CrEaTe_ProTo(fields)).hex(), packet_type, key, iv)
 
+async def heartbeat_packet(key, iv, region):
+    """Generate heartbeat/keepalive packet to maintain online presence"""
+    fields = {1: 2}  # Heartbeat type
+    if region.lower() == "ind":
+        packet_type = '0514'
+    elif region.lower() == "bd":
+        packet_type = "0519"
+    else:
+        packet_type = "0515"
+    return await GeneRaTePk((await CrEaTe_ProTo(fields)).hex(), packet_type, key, iv)
+
 auto_start_running = False
 stop_auto = False
 auto_start_task = None
@@ -358,22 +369,46 @@ async def safe_send_message(chat_type, message, target_uid, chat_id, key, iv, ma
                 await asyncio.sleep(0.5)
     return False
 
-async def TcPOnLine(ip, port, jwt_token, bot_uid, key, iv, AutHToKen, online_writer_ref, reconnect_delay=0.5):
+async def TcPOnLine(ip, port, jwt_token, bot_uid, key, iv, AutHToKen, online_writer_ref, reconnect_delay=0.5, bot_id=1, region='IN'):
+    heartbeat_interval = 5  # Send heartbeat every 5 seconds
     while True:
         try:
             reader, writer = await asyncio.open_connection(ip, int(port))
             online_writer_ref['writer'] = writer
             writer.write(bytes.fromhex(AutHToKen))
             await writer.drain()
+            print(f"[BOT{bot_id}] 🟢 Online connection established (IP: {ip}:{port})")
+            
+            last_heartbeat = time.time()
+            
             while True:
-                data = await reader.read(9999)
-                if not data:
-                    break
+                # Send periodic heartbeat to maintain online presence
+                if time.time() - last_heartbeat >= heartbeat_interval:
+                    try:
+                        hb_pkt = await heartbeat_packet(key, iv, region)
+                        if online_writer_ref['writer']:
+                            online_writer_ref['writer'].write(hb_pkt)
+                            await online_writer_ref['writer'].drain()
+                        last_heartbeat = time.time()
+                    except Exception as hb_err:
+                        print(f"[BOT{bot_id}] Heartbeat error: {hb_err}")
+                        break
+                
+                # Try to read server responses (non-blocking)
+                try:
+                    data = await asyncio.wait_for(reader.read(9999), timeout=1.0)
+                    if not data:
+                        print(f"[BOT{bot_id}] 🔴 Online connection closed by server")
+                        break
+                except asyncio.TimeoutError:
+                    # No data, continue (heartbeat will be sent next iteration)
+                    continue
+                    
             writer.close()
             await writer.wait_closed()
             online_writer_ref['writer'] = None
         except Exception as e:
-            print(f"Online error: {e}")
+            print(f"[BOT{bot_id}] 🔴 Online error: {e}")
             if online_writer_ref['writer']:
                 try:
                     online_writer_ref['writer'].close()
@@ -381,6 +416,7 @@ async def TcPOnLine(ip, port, jwt_token, bot_uid, key, iv, AutHToKen, online_wri
                 except:
                     pass
                 online_writer_ref['writer'] = None
+        print(f"[BOT{bot_id}] 🔄 Reconnecting to online server in {reconnect_delay}s...")
         await asyncio.sleep(reconnect_delay)
 
 async def TcPChaT(bot_id, ip, port, AutHToKen, key, iv, LoGinDaTaUncRypTinG, ready_event, region, online_writer_ref, reconnect_delay=0.5):
@@ -588,7 +624,8 @@ async def MaiiiinE():
                 TcPOnLine(bot_data['online_ip'], bot_data['online_port'], 
                          bot_data['auth_token'], bot_data['uid'], 
                          bot_data['key'], bot_data['iv'], 
-                         bot_data['auth_token'], online_writer_ref)
+                         bot_data['auth_token'], online_writer_ref, 
+                         bot_id=idx, region=bot_data['region'])
             )
             bot_tasks.extend([task1, task2])
             print(f"[BOT{idx}] ✅ Online - Ready for commands")
