@@ -48,12 +48,25 @@ async def GeNeRaTeAccEss(uid, password):
         "client_secret": "2ee44819e9b4598845141067b281621874d0d5d7af9d8f7e00c1e54715b7d1e3",
         "client_id": "100067"
     }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, headers=headers, data=data) as response:
-            if response.status == 200:
-                data = await response.json()
-                return data.get("open_id"), data.get("access_token")
-            return None, None
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, data=data, timeout=30, ssl=False) as response:
+                if response.status == 200:
+                    resp_data = await response.json()
+                    open_id = resp_data.get("open_id")
+                    access_token = resp_data.get("access_token")
+                    if open_id and access_token:
+                        return open_id, access_token
+                    else:
+                        print(f"[ERROR] No open_id/token in response: {resp_data}")
+                        return None, None
+                else:
+                    resp_text = await response.text()
+                    print(f"[ERROR] Auth failed with status {response.status}: {resp_text}")
+                    return None, None
+    except Exception as e:
+        print(f"[ERROR] Auth request failed: {e}")
+        return None, None
 
 online_writer = None
 whisper_writer = None
@@ -146,11 +159,22 @@ async def MajorLogin(payload):
     ssl_context = ssl.create_default_context()
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, data=payload, headers=Hr, ssl=ssl_context) as response:
-            if response.status == 200:
-                return await response.read()
-            return None
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=payload, headers=Hr, ssl=ssl_context, timeout=30) as response:
+                if response.status == 200:
+                    data = await response.read()
+                    if data and len(data) > 0:
+                        return data
+                    else:
+                        print(f"[ERROR] MajorLogin returned empty response")
+                        return None
+                else:
+                    print(f"[ERROR] MajorLogin returned status {response.status}")
+                    return None
+    except Exception as e:
+        print(f"[ERROR] MajorLogin exception: {e}")
+        return None
 
 async def GetLoginData(base_url, payload, token):
     url = f"{base_url}/GetLoginData"
@@ -536,18 +560,22 @@ async def InitializeBot(bot_id, uid, password):
 
         open_id, access_token = await GeNeRaTeAccEss(uid, password)
         if not open_id:
-            print(f"[BOT{bot_id}] ❌ Failed to get open_id/access_token")
+            print(f"[BOT{bot_id}] ❌ Failed to get open_id/access_token - Invalid credentials?")
             return None
 
+        print(f"[BOT{bot_id}] ✅ Got access token, authenticating...")
         payload = await EncRypTMajoRLoGin(open_id, access_token)
         login_resp = await MajorLogin(payload)
         if not login_resp:
-            print(f"[BOT{bot_id}] ❌ MajorLogin failed")
+            print(f"[BOT{bot_id}] ❌ MajorLogin failed - Server rejected authentication")
+            print(f"[BOT{bot_id}] ℹ️  Check if UID/Password are correct or account is banned")
             return None
+        
+        print(f"[BOT{bot_id}] ✅ Authentication successful")
         auth = await DecRypTMajoRLoGin(login_resp)
         token = auth.token
         if not token:
-            print(f"[BOT{bot_id}] ❌ No token")
+            print(f"[BOT{bot_id}] ❌ No token in response")
             return None
 
         url = auth.url
@@ -557,6 +585,7 @@ async def InitializeBot(bot_id, uid, password):
         iv = auth.iv
         timestamp = auth.timestamp
 
+        print(f"[BOT{bot_id}] 📡 Connecting to game servers...")
         login_data = await GetLoginData(url, payload, token)
         if not login_data:
             print(f"[BOT{bot_id}] ❌ GetLoginData failed")
@@ -567,6 +596,7 @@ async def InitializeBot(bot_id, uid, password):
 
         auth_token = await xAuThSTarTuP(int(bot_uid), token, int(timestamp), key, iv)
 
+        print(f"[BOT{bot_id}] ✅ Initialization complete - Ready to connect")
         return {
             'bot_id': bot_id,
             'uid': uid,
